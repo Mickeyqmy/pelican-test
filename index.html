@@ -14,9 +14,13 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
     color: var(--ink); background: radial-gradient(120% 90% at 50% 0%, #eef9ff 0%, #cbe8fc 40%, #9dcced 100%);
   }
-  .head { width: min(1000px, 100%); display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .head { width: min(1000px, 100%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
   .head h1 { margin: 0; font-size: clamp(20px, 3vw, 30px); letter-spacing: .5px; }
   .head p  { margin: 0; font-size: 14px; opacity: .68; }
+  /* 状态指示灯 */
+  .status-bar { font-size: 14px; font-weight: bold; padding: 4px 10px; border-radius: 8px; background: #ffe4e4; color: #d33; }
+  .status-bar.ok { background: #e4ffe4; color: #2a2; }
+  
   .stage {
     width: min(1000px, 100%); border-radius: 24px; overflow: hidden; line-height: 0;
     background: #bfe6ff; box-shadow: 0 30px 60px -25px rgba(15, 60, 100, .5), 0 0 0 1px rgba(255, 255, 255, .7) inset;
@@ -31,8 +35,11 @@
 <body>
 
   <div class="head">
-    <h1>🐦 鹈鹕测试</h1>
-    <p>Pelican Test — 正在骑行的鹈鹕</p>
+    <div>
+      <h1>🐦 鹈鹕测试</h1>
+      <p>Pelican Test — 正在骑行的鹈鹕</p>
+    </div>
+    <div id="status" class="status-bar">状态：等待 JavaScript 加载...</div>
   </div>
 
   <div class="stage">
@@ -58,24 +65,24 @@
 
       <!-- 静态云朵群 (跟随 JS 滚动) -->
       <g id="cloudGroup">
-        <g id="cloud1" transform="translate(100, 80)">
+        <g id="cloud1" transform="translate(100 80)">
           <ellipse cx="0" cy="0" rx="50" ry="25" fill="#fff" opacity="0.9"/>
           <circle cx="-30" cy="5" r="20" fill="#fff" opacity="0.9"/>
           <circle cx="30" cy="5" r="22" fill="#fff" opacity="0.9"/>
         </g>
-        <g id="cloud2" transform="translate(450, 130) scale(0.7)">
+        <g id="cloud2" transform="translate(450 130) scale(0.7)">
           <ellipse cx="0" cy="0" rx="50" ry="25" fill="#fff" opacity="0.9"/>
           <circle cx="-30" cy="5" r="20" fill="#fff" opacity="0.9"/>
           <circle cx="30" cy="5" r="22" fill="#fff" opacity="0.9"/>
         </g>
-        <g id="cloud3" transform="translate(700, 60) scale(1.1)">
+        <g id="cloud3" transform="translate(700 60) scale(1.1)">
           <ellipse cx="0" cy="0" rx="50" ry="25" fill="#fff" opacity="0.9"/>
           <circle cx="-30" cy="5" r="20" fill="#fff" opacity="0.9"/>
           <circle cx="30" cy="5" r="22" fill="#fff" opacity="0.9"/>
         </g>
       </g>
 
-      <!-- 远山 / 近山 (使用 JS 横向滚动) -->
+      <!-- 远山 / 近山 -->
       <g id="hillBack" fill="#b8e3c3">
         <path d="M -200 450 Q -50 330 100 450 Q 250 350 400 450 Q 550 320 700 450 Q 850 340 1000 450 L 1000 500 L -200 500 Z"/>
       </g>
@@ -91,7 +98,6 @@
       <g id="rearWheel">
         <circle cx="250" cy="390" r="85" fill="none" stroke="#2b3441" stroke-width="9"/>
         <circle cx="250" cy="390" r="76" fill="none" stroke="#c6cfda" stroke-width="4"/>
-        <!-- 直接硬编码辐条，确保显示 -->
         <line x1="250" y1="314" x2="250" y2="466" stroke="#aeb8c4" stroke-width="3"/>
         <line x1="174" y1="390" x2="326" y2="390" stroke="#aeb8c4" stroke-width="3"/>
         <line x1="196" y1="336" x2="304" y2="444" stroke="#aeb8c4" stroke-width="3"/>
@@ -180,38 +186,143 @@
   </div>
 
 <script>
-(function () {
-  // 使用简单的 DOM 获取
-  const rearWheel = document.getElementById("rearWheel");
-  const frontWheel = document.getElementById("frontWheel");
-  const crankArmA = document.getElementById("crankArmA");
-  const crankArmB = document.getElementById("crankArmB");
-  const pedalA = document.getElementById("pedalA");
-  const pedalB = document.getElementById("pedalB");
+// 使用最稳妥的 ES5 语法，确保极致的浏览器兼容性
+window.onload = function () {
+  var rearWheel = document.getElementById("rearWheel");
+  var frontWheel = document.getElementById("frontWheel");
+  var crankArmA = document.getElementById("crankArmA");
+  var crankArmB = document.getElementById("crankArmB");
+  var pedalA = document.getElementById("pedalA");
+  var pedalB = document.getElementById("pedalB");
   
-  const thighA = document.getElementById("thighA");
-  const shinA = document.getElementById("shinA");
-  const footA = document.getElementById("footA");
+  var thighA = document.getElementById("thighA");
+  var shinA = document.getElementById("shinA");
+  var footA = document.getElementById("footA");
   
-  const thighB = document.getElementById("thighB");
-  const shinB = document.getElementById("shinB");
-  const footB = document.getElementById("footB");
+  var thighB = document.getElementById("thighB");
+  var shinB = document.getElementById("shinB");
+  var footB = document.getElementById("footB");
 
-  const hillBack = document.getElementById("hillBack");
-  const hillFront = document.getElementById("hillFront");
-  const roadLine = document.getElementById("roadLine");
+  var hillBack = document.getElementById("hillBack");
+  var hillFront = document.getElementById("hillFront");
+  var roadLine = document.getElementById("roadLine");
   
-  const cloud1 = document.getElementById("cloud1");
-  const cloud2 = document.getElementById("cloud2");
-  const cloud3 = document.getElementById("cloud3");
+  var cloud1 = document.getElementById("cloud1");
+  var cloud2 = document.getElementById("cloud2");
+  var cloud3 = document.getElementById("cloud3");
+  
+  var pelican = document.getElementById("pelican");
 
-  const speedInput = document.getElementById("speed");
+  var speedInput = document.getElementById("speed");
+  var statusEl = document.getElementById("status");
 
-  // 物理尺寸常量
-  const BB = { x: 390, y: 385 };   // 中轴
-  const CR = 30;                   // 曲柄长度
-  const HIP_A = { x: 363, y: 254 }; // 近侧腿髋
-  const HIP_B = { x: 355, y: 258 }; // 远侧腿髋
-  const THIGH = 82, SHIN = 88;     // 腿长
+  // 状态更新
+  statusEl.className = "status-bar ok";
+  statusEl.innerHTML = "状态：代码已加载，动画启动！";
 
-  let speedMul = 1;
+  var BB = { x: 390, y: 385 };
+  var CR = 30;
+  var HIP_A = { x: 363, y: 254 };
+  var HIP_B = { x: 355, y: 258 };
+  var THIGH = 82, SHIN = 88;
+
+  var speedMul = 1;
+  speedInput.oninput = function (e) {
+    speedMul = parseFloat(e.target.value);
+  };
+
+  function solveKnee(hip, foot, l1, l2) {
+    var dx = foot.x - hip.x;
+    var dy = foot.y - hip.y;
+    var d = Math.sqrt(dx * dx + dy * dy);
+    if (d === 0) d = 0.1;
+    d = Math.max(Math.abs(l1 - l2) + 0.1, Math.min(d, l1 + l2 - 0.1));
+    
+    var cosA = (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d);
+    if (cosA > 1) cosA = 1;
+    if (cosA < -1) cosA = -1;
+    
+    var a = Math.acos(cosA);
+    var base = Math.atan2(dy, dx);
+    var ang = base - a;
+    return { x: hip.x + l1 * Math.cos(ang), y: hip.y + l1 * Math.sin(ang) };
+  }
+
+  function setLine(el, x1, y1, x2, y2) {
+    if (!el) return;
+    el.setAttribute("x1", x1.toFixed(1));
+    el.setAttribute("y1", y1.toFixed(1));
+    el.setAttribute("x2", x2.toFixed(1));
+    el.setAttribute("y2", y2.toFixed(1));
+  }
+
+  var t = 0;
+  var lastTime = new Date().getTime();
+
+  function animate() {
+    var currentTime = new Date().getTime();
+    var dt = (currentTime - lastTime) / 1000;
+    if (dt > 0.1) dt = 0.05; // 防止切屏回来后跳跃
+    lastTime = currentTime;
+    t += dt * speedMul;
+
+    // 状态实时更新，证明动画在跑
+    statusEl.innerHTML = "状态：动画运行中 (" + t.toFixed(1) + "s)";
+
+    // 1. 车轮旋转
+    var wheelDeg = t * 330;
+    rearWheel.setAttribute("transform", "rotate(" + wheelDeg + " 250 390)");
+    frontWheel.setAttribute("transform", "rotate(" + wheelDeg + " 555 390)");
+
+    // 2. 背景滚动
+    hillBack.setAttribute("transform", "translate(" + (-(t * 55 % 400)) + " 0)");
+    hillFront.setAttribute("transform", "translate(" + (-(t * 100 % 400)) + " 0)");
+    roadLine.setAttribute("stroke-dashoffset", -(t * 420 % 92));
+
+    // 3. 云朵飘动
+    cloud1.setAttribute("transform", "translate(" + (100 + (t * 20) % 800) + " 80)");
+    cloud2.setAttribute("transform", "translate(" + (450 + (t * 35) % 800) + " 130) scale(0.7)");
+    cloud3.setAttribute("transform", "translate(" + (700 + (t * 15) % 800) + " 60) scale(1.1)");
+
+    // 4. 鹈鹕身体浮动
+    var bounce = Math.sin(t * 8) * 3;
+    pelican.setAttribute("transform", "translate(0 " + bounce.toFixed(1) + ")");
+
+    // 5. 曲柄和踏板
+    var th = t * 3.4;
+    var pA = { x: BB.x + CR * Math.cos(th), y: BB.y + CR * Math.sin(th) };
+    var pB = { x: BB.x + CR * Math.cos(th + Math.PI), y: BB.y + CR * Math.sin(th + Math.PI) };
+
+    setLine(crankArmA, BB.x, BB.y, pA.x, pA.y);
+    setLine(crankArmB, BB.x, BB.y, pB.x, pB.y);
+    pedalA.setAttribute("transform", "translate(" + pA.x.toFixed(1) + " " + pA.y.toFixed(1) + ")");
+    pedalB.setAttribute("transform", "translate(" + pB.x.toFixed(1) + " " + pB.y.toFixed(1) + ")");
+
+    // 6. 腿部IK计算
+    var kA = solveKnee(HIP_A, pA, THIGH, SHIN);
+    var kB = solveKnee(HIP_B, pB, THIGH, SHIN);
+
+    setLine(thighA, HIP_A.x, HIP_A.y, kA.x, kA.y);
+    setLine(shinA,  kA.x, kA.y, pA.x, pA.y);
+    footA.setAttribute("cx", pA.x.toFixed(1));
+    footA.setAttribute("cy", pA.y.toFixed(1));
+
+    setLine(thighB, HIP_B.x, HIP_B.y, kB.x, kB.y);
+    setLine(shinB,  kB.x, kB.y, pB.x, pB.y);
+    footB.setAttribute("cx", pB.x.toFixed(1));
+    footB.setAttribute("cy", pB.y.toFixed(1));
+
+    // 下一帧
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(animate);
+    } else {
+      setTimeout(animate, 1000 / 60);
+    }
+  }
+
+  // 启动
+  animate();
+};
+</script>
+</body>
+</html>
