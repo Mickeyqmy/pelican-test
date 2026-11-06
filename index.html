@@ -1,98 +1,75 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鹈鹕测试 - Pelican Test</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            background:#f0f8ff;
-            height:100vh;
-            overflow:hidden;
-            font-family:system-ui;
-        }
-        .container{
-            width:100%;
-            height:100%;
-            position:relative;
-        }
-        /* 鹈鹕骑车整体，横向移动动画 */
-        .pelican-bike{
-            position:absolute;
-            bottom:120px;
-            left:-300px;
-            animation: ride 12s linear infinite;
-        }
-        @keyframes ride{
-            0%{left:-300px;}
-            100%{left:110%;}
-        }
-        /* 车轮旋转 */
-        .wheel{
-            width:80px;height:80px;
-            border:4px solid #333;
-            border-radius:50%;
-            position:absolute;
-            animation: rotate 0.8s linear infinite;
-        }
-        @keyframes rotate{
-            from{transform:rotate(0deg);}
-            to{transform:rotate(360deg);}
-        }
-        .wheel1{bottom:0;left:20px;}
-        .wheel2{bottom:0;left:140px;}
-        .bike-body{
-            width:180px;height:10px;
-            background:#444;
-            position:absolute;
-            bottom:40px;
-            left:10px;
-        }
-        .bike-handle{
-            width:60px;height:8px;
-            background:#333;
-            position:absolute;
-            bottom:70px;
-            left:130px;
-            transform:rotate(-20deg);
-        }
-        /* 鹈鹕 */
-        .pelican{
-            position:absolute;
-            bottom:75px;
-            left:40px;
-            font-size:80px;
-        }
-        .ground{
-            position:absolute;
-            bottom:0;
-            width:100%;
-            height:100px;
-            background:#77aa77;
-        }
-        .title{
-            text-align:center;
-            padding:30px;
-            font-size:32px;
-            color:#224477;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>鹈鹕测试 Pelican Test</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e8f4ff;overflow:hidden}
+/* 整体从左向右移动 */
+@keyframes ride{
+  0%{transform:translateX(-200px)}
+  100%{transform:translateX(100vw)}
+}
+/* 车轮旋转 */
+@keyframes wheel{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+/* 踏板转动 */
+@keyframes pedal{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+.ride-group{
+  animation:ride 12s linear infinite;
+  position:absolute;
+  top:40%;
+}
+.wheel{
+  animation:wheel 2s linear infinite;
+  transform-origin:center;
+}
+.pedal{
+  animation:pedal 2s linear infinite;
+  transform-origin:center;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="title">鹈鹕测试 Pelican Test</div>
-
-        <!-- 鹈鹕+自行车组合 -->
-        <div class="pelican-bike">
-            <div class="pelican">🦤</div>
-            <div class="bike-body"></div>
-            <div class="bike-handle"></div>
-            <div class="wheel wheel1"></div>
-            <div class="wheel wheel2"></div>
-        </div>
-
-        <div class="ground"></div>
-    </div>
+<h2 style="text-align:center;margin-top:20px;">鹈鹕测试 Pelican Test</h2>
+<svg width="500" height="300" viewBox="0 0 500 300" class="ride-group">
+  <!--地面-->
+  <rect x="0" y="240" width="500" height="20" fill="#779977"/>
+  <!--自行车-->
+  <g>
+    <!--后轮-->
+    <circle cx="120" cy="210" r="40" fill="none" stroke="#222" stroke-width="4" class="wheel"/>
+    <!--前轮-->
+    <circle cx="280" cy="210" r="40" fill="none" stroke="#222" stroke-width="4" class="wheel"/>
+    <!--车架-->
+    <line x1="120" y1="210" x2="200" y2="140" stroke="#222" stroke-width="4"/>
+    <line x1="200" y1="140" x2="280" y2="210" stroke="#222" stroke-width="4"/>
+    <line x1="200" y1="140" x2="120" y2="210" stroke="#222" stroke-width="4"/>
+    <line x1="200" y1="140" x2="200" y2="210" stroke="#222" stroke-width="4"/>
+    <line x1="200" y1="140" x2="260" y2="150" stroke="#222" stroke-width="4"/>
+    <!--踏板-->
+    <g class="pedal">
+      <circle cx="200" cy="210" r="6" fill="#222"/>
+      <line x1="200" y1="210" x2="225" y2="230" stroke="#222" stroke-width="3"/>
+      <line x1="200" y1="210" x2="175" y2="190" stroke="#222" stroke-width="3"/>
+    </g>
+  </g>
+  <!--鹈鹕（修复图形）-->
+  <g>
+    <ellipse cx="200" cy="120" rx="45" ry="30" fill="white" stroke="#222"/>
+    <circle cx="235" cy="100" r="16" fill="white" stroke="#222"/>
+    <path d="M250 100 L310 115 L290 130 Z" fill="#ffaa44" stroke="#222"/>
+    <circle cx="242" cy="95" r="3" fill="black"/>
+    <!--鹈鹕腿，踩在踏板上-->
+    <path d="M180 135 L160 170" stroke="#222" stroke-width="4"/>
+    <path d="M220 135 L240 170" stroke="#222" stroke-width="4"/>
+  </g>
+</svg>
 </body>
 </html>
